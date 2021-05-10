@@ -1,0 +1,13 @@
+<!doctype html>
+<title>Style Transfer</title>
+<h2>Transferred Image</h2>
+
+<body>
+<div>
+{% if filename %}
+	<div>
+		<img src="{{ url_for('display_image', filename=filename) }}">
+	</div>
+{% endif %}
+</div>
+</body>
