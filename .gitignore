@@ -6,8 +6,3 @@ __pycache__/
 .idea/
 .log
 .ipynb_checkpoints/
-
-static/transferred
-static/uploads
-
-!static/style.css
