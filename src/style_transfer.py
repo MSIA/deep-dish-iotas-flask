@@ -1,8 +1,10 @@
 import numpy as np
 from PIL import Image, ImageOps
 
+from src import evaluate
 
-def transfer_image(image_file_or_path, style):
+
+def transfer_image(image_file_or_path, style, save_path):
     """
     Reads an image file and applies style transformation.
 
@@ -15,10 +17,24 @@ def transfer_image(image_file_or_path, style):
     """
     image = Image.open(image_file_or_path)
 
+    # Simple PIL Image transformations (no model used)
     if style == "Grayscale":
         image = ImageOps.grayscale(image)
+        image.save(save_path)
 
-    return image
+    # Use pretrained style transfer models
+    DEVICE = "/CPU:0"
+    BATCH_SIZE = 1
+    image = np.clip(np.array(image), 0, 255).astype(np.uint8)
+
+    if style == "Wave":
+        image = evaluate.ffwd(
+            image,
+            save_path,
+            "src/models/wave.ckpt",
+            device_t=DEVICE,
+            batch_size=BATCH_SIZE
+        )
 
 
 def transfer_video_frame(frame, style):

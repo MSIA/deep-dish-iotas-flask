@@ -94,11 +94,11 @@ def upload_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         # Perform style transfer
-        file_transferred = transfer_image(file, style)
-
-        # Save transferred file
         new_filename = 'transferred_' + filename
-        file_transferred.save(os.path.join(app.config['OUTPUT_FOLDER'], new_filename))
+        save_path = os.path.join(app.config['OUTPUT_FOLDER'], new_filename)
+        print("Save path:", save_path)
+        print("New filename:", new_filename)
+        transfer_image(file, style, save_path)
 
         # Show transferred file on /result
         return render_template('result.html', filename=new_filename)
