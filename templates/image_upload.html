@@ -1,5 +1,6 @@
 <!doctype html>
 <title>Style Transfer</title>
+<h1>Image Style Transfer</h1>
 <h2>Select a picture to upload</h2>
 <p>
 	{% with messages = get_flashed_messages() %}
@@ -13,13 +14,21 @@
 	{% endwith %}
 </p>
 
+{#Image upload#}
 {% if filename %}
 	<div>
 		<img src="{{ url_for('display_image', filename=filename) }}">
 	</div>
 {% endif %}
 
+{#Submit button#}
 <form method="post" action="/result" enctype="multipart/form-data">
+    {#Style dropdown menu#}
+    <select class="form-control" method="POST" id="style" name="style">
+        <option selected>Grayscale</option>
+        <option>Wave</option>
+    </select>
+    {#Input image#}
     <dl>
 		<p>
 			<input type="file" name="file" autocomplete="off" required>

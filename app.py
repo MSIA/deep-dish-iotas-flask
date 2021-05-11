@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import cv2
 
 import config
-from src.image_transfer import transfer_image, transfer_video_frame
+from src.style_transfer import transfer_image, transfer_video_frame
 
 # Configuration
 app = Flask(__name__)
@@ -21,7 +21,7 @@ def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
-def _gen_frames():
+def _gen_frames(style):
     """Camera live stream."""
     while True:
         success, frame = camera.read()
@@ -29,7 +29,7 @@ def _gen_frames():
             break
         else:
             # Apply style transformation
-            frame = transfer_video_frame(frame)
+            frame = transfer_video_frame(frame, style)
 
             # Convert image into buffer of bytes for streaming
             ret, buffer = cv2.imencode('.jpg', frame)
@@ -65,10 +65,18 @@ def upload_file():
         return redirect(request.url)
 
     if file and _allowed_file(file.filename):
+        # Parse name of style from dropdown menu
+        style = request.form.get('style')
+        print("Style:", style)
+        if style is None:
+            style = 'Grayscale'
+
         # Save uploaded file
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        file_transferred = transfer_image(file)
+
+        # Perform style transfer
+        file_transferred = transfer_image(file, style)
 
         # Save transferred file
         new_filename = 'transferred_' + filename

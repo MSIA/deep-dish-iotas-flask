@@ -2,27 +2,32 @@ import numpy as np
 from PIL import Image, ImageOps
 
 
-def transfer_image(image_file_or_path):
+def transfer_image(image_file_or_path, style):
     """
     Reads an image file and applies style transformation.
 
     Args:
-        image_file_or_path: Location of file to style
+        image_file_or_path (str): Location of file to style
+        style (str): Name of style/model to apply
 
     Returns:
         Stylized PIL Image
     """
     image = Image.open(image_file_or_path)
-    gray_img = ImageOps.grayscale(image)
-    return gray_img
+
+    if style == "Grayscale":
+        image = ImageOps.grayscale(image)
+
+    return image
 
 
-def transfer_video_frame(frame):
+def transfer_video_frame(frame, style):
     """
     Stylizes a video frame.
 
     Args:
-        frame: Image from
+        frame (PIL.Image): Image from `camera.read()`
+        style (str): Name of style/model to apply
 
     Returns:
         numpy.array of stylized image
@@ -31,7 +36,8 @@ def transfer_video_frame(frame):
     frame = Image.fromarray(frame)
 
     # Stylize
-    frame = ImageOps.grayscale(frame)
+    if style == "Grayscale":
+        frame = ImageOps.grayscale(frame)
 
     # Convert back to NumPy array for buffer stream
     # Note that this is needed for video feeds but not static images
