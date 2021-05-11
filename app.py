@@ -1,8 +1,17 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, url_for, Response
-from werkzeug.utils import secure_filename
 import cv2
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    Response,
+    send_from_directory,
+    url_for
+)
+from werkzeug.utils import secure_filename
 
 import config
 from src.style_transfer import transfer_image, transfer_video_frame
@@ -21,7 +30,7 @@ def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
-def _gen_frames(style):
+def _gen_frames():
     """Camera live stream."""
     while True:
         success, frame = camera.read()
@@ -29,7 +38,7 @@ def _gen_frames(style):
             break
         else:
             # Apply style transformation
-            frame = transfer_video_frame(frame, style)
+            frame = transfer_video_frame(frame, style="Grayscale")
 
             # Convert image into buffer of bytes for streaming
             ret, buffer = cv2.imencode('.jpg', frame)
@@ -43,6 +52,15 @@ def _gen_frames(style):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
+    )
 
 
 @app.route('/image_upload')

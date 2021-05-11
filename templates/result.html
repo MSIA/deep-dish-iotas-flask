@@ -1,9 +1,24 @@
 <!doctype html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
 <title>Style Transfer</title>
 <h2>Transferred Image</h2>
 
 <body>
-<a href="{{ url_for('image_upload') }}">Upload another image</a>
+
+<form method="get" action="/image_upload" enctype="multipart/form-data">
+    <p>
+		<input type="submit" value="Upload another image">
+	</p>
+</form>
+
+<form method="get" action="/" enctype="multipart/form-data">
+    <p>
+		<input type="submit" value="Back to main menu">
+	</p>
+</form>
+
 <div>
 {% if filename %}
 	<div>
