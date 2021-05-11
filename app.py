@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import cv2
 
 import config
-from src.image_transfer import transfer
+from src.image_transfer import transfer_image, transfer_video_frame
 
 # Configuration
 app = Flask(__name__)
@@ -28,10 +28,16 @@ def _gen_frames():
         if not success:
             break
         else:
+            # Apply style transformation
+            frame = transfer_video_frame(frame)
+
+            # Convert image into buffer of bytes for streaming
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
+
+            # concat frame one by one and show result
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/')
@@ -62,7 +68,7 @@ def upload_file():
         # Save uploaded file
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        file_transferred = transfer(file)
+        file_transferred = transfer_image(file)
 
         # Save transferred file
         new_filename = 'transferred_' + filename

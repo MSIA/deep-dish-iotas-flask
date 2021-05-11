@@ -6,4 +6,7 @@ __pycache__/
 .idea/
 .log
 .ipynb_checkpoints/
+venv/
 
+static/transferred/
+static/uploads/
