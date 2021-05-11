@@ -84,10 +84,7 @@ def upload_file():
 
     if file and _allowed_file(file.filename):
         # Parse name of style from dropdown menu
-        style = request.form.get('style')
-        print("Style:", style)
-        if style is None:
-            style = 'Grayscale'
+        style = request.form.get('style', 'Grayscale')
 
         # Save uploaded file
         filename = secure_filename(file.filename)
@@ -96,8 +93,6 @@ def upload_file():
         # Perform style transfer
         new_filename = 'transferred_' + filename
         save_path = os.path.join(app.config['OUTPUT_FOLDER'], new_filename)
-        print("Save path:", save_path)
-        print("New filename:", new_filename)
         transfer_image(file, style, save_path)
 
         # Show transferred file on /result

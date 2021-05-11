@@ -27,14 +27,26 @@ def transfer_image(image_file_or_path, style, save_path):
     BATCH_SIZE = 1
     image = np.clip(np.array(image), 0, 255).astype(np.uint8)
 
-    if style == "Wave":
-        image = evaluate.ffwd(
-            image,
-            save_path,
-            "src/models/wave.ckpt",
-            device_t=DEVICE,
-            batch_size=BATCH_SIZE
-        )
+    if style == "La Muse":
+        model = "src/models/la_muse.ckpt"
+    elif style == "Rain Princess":
+        model = "src/models/rain_princess.ckpt"
+    elif style == "The Scream":
+        model = "src/models/scream.ckpt"
+    elif style == "Udnie":
+        model = "src/models/udnie.ckpt"
+    elif style == "Wave":
+        model = "src/models/wave.ckpt"
+    elif style == "Wreck":
+        model = "src/models/wreck.ckpt"
+
+    evaluate.ffwd(
+        image,
+        save_path,
+        model,
+        device_t=DEVICE,
+        batch_size=BATCH_SIZE
+    )
 
 
 def transfer_video_frame(frame, style):
