@@ -108,12 +108,17 @@ def upload_file():
         return redirect(request.url)
 
 
+@app.route('/video_settings')
+def video_settings():
+    return render_template('video_settings.html')
+
+
 @app.route('/display/<filename>')
 def display_image(filename):
     return redirect(url_for('static', filename='transferred/' + filename), code=301)
 
 
-@app.route('/video_feed')
+@app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
     return Response(_gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 

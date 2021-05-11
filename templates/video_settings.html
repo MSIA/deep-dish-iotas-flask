@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Style Transfer</title>
+<h1>Video Style Transfer</h1>
+
+<h2>Select your theme:</h2>
+{#Submit button#}
+<form method="post" action="/video_feed" enctype="multipart/form-data">
+    {#Style dropdown menu#}
+    <select class="form-control" method="POST" id="style" name="style">
+        <option selected>Grayscale</option>
+        <option>Wave</option>
+    </select>
+    <p>
+		<input type="submit" value="Submit">
+	</p>
+</form>
