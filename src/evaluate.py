@@ -10,7 +10,7 @@ import transform
 import utils
 
 
-def ffwd(image_in, save_path, saved_model, device_t="/cpu:0", batch_size=1):
+def ffwd(image_in, save_path, saved_model, device_t="/cpu:0", batch_size=1, save=True):
     """Apply model style to an image."""
     img_shape = image_in.shape
 
@@ -32,12 +32,16 @@ def ffwd(image_in, save_path, saved_model, device_t="/cpu:0", batch_size=1):
             if ckpt and ckpt.model_checkpoint_path:
                 saver.restore(sess, ckpt.model_checkpoint_path)
             else:
-                raise Exception("No checkpoint found...")
+                raise Exception("No checkpoint found.")
         else:
             saver.restore(sess, saved_model)
 
         # Apply new style (batch is only one image)
         X = np.zeros(batch_shape, dtype=np.float32)
         X[0] = image_in
-        _preds = sess.run(preds, feed_dict={img_placeholder: X})
-        utils.save_img(save_path, _preds[0])
+        result_batch = sess.run(preds, feed_dict={img_placeholder: X})
+
+        if save:
+            utils.save_img(save_path, result_batch[0])
+        else:
+            return result_batch[0]

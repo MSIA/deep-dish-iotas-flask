@@ -13,7 +13,7 @@ def transfer_image(image_file_or_path, style, save_path):
         style (str): Name of style/model to apply
 
     Returns:
-        Stylized PIL Image
+        None (saves the resulting image to file)
     """
     image = Image.open(image_file_or_path)
 
@@ -31,6 +31,8 @@ def transfer_image(image_file_or_path, style, save_path):
         model = "src/models/la_muse.ckpt"
     elif style == "Rain Princess":
         model = "src/models/rain_princess.ckpt"
+    # elif style == "Starry Night":
+    #     model = "src/models/starry_night/"
     elif style == "The Scream":
         model = "src/models/scream.ckpt"
     elif style == "Udnie":
@@ -41,11 +43,12 @@ def transfer_image(image_file_or_path, style, save_path):
         model = "src/models/wreck.ckpt"
 
     evaluate.ffwd(
-        image,
-        save_path,
-        model,
+        image_in=image,
+        save_path=save_path,
+        saved_model=model,
         device_t=DEVICE,
-        batch_size=BATCH_SIZE
+        batch_size=BATCH_SIZE,
+        save=True
     )
 
 
@@ -63,12 +66,30 @@ def transfer_video_frame(frame, style):
     # Convert to PIL Image to use their transformations
     frame = Image.fromarray(frame)
 
-    # Stylize
+    # Simple PIL Image transformations (no model used)
     if style == "Grayscale":
         frame = ImageOps.grayscale(frame)
+        frame = np.array(frame)
+        return frame
+
+    # Use pretrained style transfer models
+    DEVICE = "/CPU:0"
+    BATCH_SIZE = 1
+    frame = np.clip(np.array(frame), 0, 255).astype(np.uint8)
+
+    if style == "Wave":
+        model = "src/models/wave.ckpt"
+
+    frame = evaluate.ffwd_video(
+        image_in=frame,
+        save_path="",
+        saved_model=model,
+        device_t=DEVICE,
+        batch_size=BATCH_SIZE,
+        save=False
+    )
 
     # Convert back to NumPy array for buffer stream
-    # Note that this is needed for video feeds but not static images
     frame = np.array(frame)
 
     return frame
