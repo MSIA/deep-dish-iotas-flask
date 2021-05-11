@@ -27,20 +27,7 @@ def transfer_image(image_file_or_path, style, save_path):
     BATCH_SIZE = 1
     image = np.clip(np.array(image), 0, 255).astype(np.uint8)
 
-    if style == "La Muse":
-        model = "src/models/la_muse.ckpt"
-    elif style == "Rain Princess":
-        model = "src/models/rain_princess.ckpt"
-    # elif style == "Starry Night":
-    #     model = "src/models/starry_night/"
-    elif style == "The Scream":
-        model = "src/models/scream.ckpt"
-    elif style == "Udnie":
-        model = "src/models/udnie.ckpt"
-    elif style == "Wave":
-        model = "src/models/wave.ckpt"
-    elif style == "Wreck":
-        model = "src/models/wreck.ckpt"
+    model = get_model_path_from_name(style)
 
     evaluate.ffwd(
         image_in=image,
@@ -77,10 +64,9 @@ def transfer_video_frame(frame, style):
     BATCH_SIZE = 1
     frame = np.clip(np.array(frame), 0, 255).astype(np.uint8)
 
-    if style == "Wave":
-        model = "src/models/wave.ckpt"
+    model = get_model_path_from_name(style)
 
-    frame = evaluate.ffwd_video(
+    frame = evaluate.ffwd(
         image_in=frame,
         save_path="",
         saved_model=model,
@@ -93,3 +79,22 @@ def transfer_video_frame(frame, style):
     frame = np.array(frame)
 
     return frame
+
+
+def get_model_path_from_name(model_name):
+    if model_name == "La Muse":
+        return "src/models/la_muse.ckpt"
+    elif model_name == "Rain Princess":
+        return "src/models/rain_princess.ckpt"
+    # elif model_name == "Starry Night":
+    #     return "src/models/starry_night/"
+    elif model_name == "The Scream":
+        return "src/models/scream.ckpt"
+    elif model_name == "Udnie":
+        return "src/models/udnie.ckpt"
+    elif model_name == "Wave":
+        return "src/models/wave.ckpt"
+    elif model_name == "Wreck":
+        return "src/models/wreck.ckpt"
+    else:
+        raise Exception

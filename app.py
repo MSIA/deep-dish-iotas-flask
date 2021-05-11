@@ -30,7 +30,7 @@ def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
-def _gen_frames():
+def _gen_frames(style):
     """Camera live stream."""
     while True:
         success, frame = camera.read()
@@ -38,7 +38,7 @@ def _gen_frames():
             break
         else:
             # Apply style transformation
-            frame = transfer_video_frame(frame, style="Grayscale")
+            frame = transfer_video_frame(frame, style)
 
             # Convert image into buffer of bytes for streaming
             ret, buffer = cv2.imencode('.jpg', frame)
@@ -115,7 +115,10 @@ def display_image(filename):
 
 @app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
-    return Response(_gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # Parse name of style from dropdown menu
+    style = request.form.get('style', 'Grayscale')
+
+    return Response(_gen_frames(style), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':
