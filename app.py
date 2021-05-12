@@ -14,7 +14,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 
 import config
-from src.style_transfer import transfer_image, transfer_video_frame
+from src.style_transfer import transfer_image, transfer_video, transfer_webcam
 
 # Configuration
 app = Flask(__name__)
@@ -38,7 +38,7 @@ def _gen_frames(style):
             break
         else:
             # Apply style transformation
-            frame = transfer_video_frame(frame, style)
+            frame = transfer_webcam(frame, style)
 
             # Convert image into buffer of bytes for streaming
             ret, buffer = cv2.imencode('.jpg', frame)
@@ -88,12 +88,19 @@ def upload_file():
 
         # Save uploaded file
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        upload_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_filepath)
 
         # Perform style transfer
         new_filename = 'transferred_' + filename
         save_path = os.path.join(app.config['OUTPUT_FOLDER'], new_filename)
-        transfer_image(file, style, save_path)
+
+        # Handle videos or images
+        if new_filename[-3:] == 'mp4':
+            transfer_video(upload_filepath, style, save_path)
+            return redirect(url_for('static', filename='transferred/' + new_filename), code=301)
+        else:
+            transfer_image(file, style, save_path)
 
         # Show transferred file on /result
         return render_template('result.html', filename=new_filename)
@@ -118,7 +125,7 @@ def video_feed():
     # Parse name of style from dropdown menu
     style = request.form.get('style', 'Grayscale')
 
-    return Response(_gen_frames(style), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(transfer_webcam(style), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':

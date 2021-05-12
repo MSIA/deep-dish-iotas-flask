@@ -11,6 +11,7 @@ def transfer_image(image_file_or_path, style, save_path):
     Args:
         image_file_or_path (str): Location of file to style
         style (str): Name of style/model to apply
+        save_path (str): Where to save result image
 
     Returns:
         None (saves the resulting image to file)
@@ -29,7 +30,7 @@ def transfer_image(image_file_or_path, style, save_path):
 
     model = get_model_path_from_name(style)
 
-    evaluate.ffwd(
+    evaluate.style_image(
         image_in=image,
         save_path=save_path,
         saved_model=model,
@@ -39,7 +40,33 @@ def transfer_image(image_file_or_path, style, save_path):
     )
 
 
-def transfer_video_frame(frame, style):
+def transfer_video(video_file_or_path, style, save_path):
+    """
+    Reads a video file and applies style transformation.
+
+    Args:
+        video_file_or_path (str): Location of file to style
+        style (str): Name of style/model to apply
+        save_path (str): Where to save result video
+
+    Returns:
+        None (saves the resulting image to file)
+    """
+    DEVICE = "/CPU:0"
+    BATCH_SIZE = 1
+
+    model = get_model_path_from_name(style)
+
+    evaluate.style_video(
+        video_in=video_file_or_path,
+        save_path=save_path,
+        saved_model=model,
+        device_t=DEVICE,
+        batch_size=BATCH_SIZE
+    )
+
+
+def transfer_webcam(style):
     """
     Stylizes a video frame.
 
@@ -50,35 +77,16 @@ def transfer_video_frame(frame, style):
     Returns:
         numpy.array of stylized image
     """
-    # Convert to PIL Image to use their transformations
-    frame = Image.fromarray(frame)
-
-    # Simple PIL Image transformations (no model used)
-    if style == "Grayscale":
-        frame = ImageOps.grayscale(frame)
-        frame = np.array(frame)
-        return frame
-
-    # Use pretrained style transfer models
     DEVICE = "/CPU:0"
     BATCH_SIZE = 1
-    frame = np.clip(np.array(frame), 0, 255).astype(np.uint8)
-
     model = get_model_path_from_name(style)
 
-    frame = evaluate.ffwd(
-        image_in=frame,
-        save_path="",
+    for frame in evaluate.style_webcam(
         saved_model=model,
         device_t=DEVICE,
-        batch_size=BATCH_SIZE,
-        save=False
-    )
-
-    # Convert back to NumPy array for buffer stream
-    frame = np.array(frame)
-
-    return frame
+        batch_size=BATCH_SIZE
+    ):
+        yield frame
 
 
 def get_model_path_from_name(model_name):
