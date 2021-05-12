@@ -27,25 +27,6 @@ def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
-def _gen_frames(style):
-    """Camera live stream."""
-    while True:
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
-            # Apply style transformation
-            frame = transfer_webcam(frame, style)
-
-            # Convert image into buffer of bytes for streaming
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-
-            # concat frame one by one and show result
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
 @app.route('/')
 def index():
     return render_template('index.html')

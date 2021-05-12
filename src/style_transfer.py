@@ -94,8 +94,8 @@ def get_model_path_from_name(model_name):
         return "src/models/la_muse.ckpt"
     elif model_name == "Rain Princess":
         return "src/models/rain_princess.ckpt"
-    # elif model_name == "Starry Night":
-    #     return "src/models/starry_night/"
+    elif model_name == "Starry Night":
+        return "src/models/starry_night/"
     elif model_name == "The Scream":
         return "src/models/scream.ckpt"
     elif model_name == "Udnie":
