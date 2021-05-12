@@ -18,10 +18,7 @@ from src.style_transfer import transfer_image, transfer_video, transfer_webcam
 
 # Configuration
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = config.UPLOAD_FOLDER
-app.config['OUTPUT_FOLDER'] = config.OUTPUT_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
-app.secret_key = config.SECRET_KEY
+app.config.from_pyfile('config.py')
 camera = cv2.VideoCapture(config.CAMERA_DEVICE)
 
 
@@ -129,4 +126,4 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=config.PORT)
+    app.run(host=config.HOST, port=config.PORT)
